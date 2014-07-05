@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <persistence version="2.1" xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd">
-	<persistence-unit name="StarCines">
+	<persistence-unit name="StarCines" transaction-type="RESOURCE_LOCAL">
+		<class>starcines.model.entities.Cartelera</class>
+		<class>starcines.model.entities.Genero</class>
+		<class>starcines.model.entities.Horario</class>
+		<class>starcines.model.entities.Pelicula</class>
+		<class>starcines.model.entities.Sala</class>
+		<class>starcines.model.entities.Snack</class>
+		<class>starcines.model.entities.Usuario</class>
+		<properties>
+			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://172.20.158.70:5432/Cines"/>
+			<property name="javax.persistence.jdbc.user" value="fabian"/>
+			<property name="javax.persistence.jdbc.driver" value="org.postgresql.Driver"/>
+			<property name="javax.persistence.jdbc.password" value="fabian"/>
+		</properties>
 	</persistence-unit>
 </persistence>
