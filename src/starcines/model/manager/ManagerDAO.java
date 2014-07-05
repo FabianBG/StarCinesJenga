@@ -15,7 +15,7 @@ import javax.persistence.Query;
 @LocalBean
 public class ManagerDAO {
 
-	@PersistenceContext(unitName = "EJBFacturacionEJB")
+	@PersistenceContext(unitName = "StarCines")
 	private EntityManager em;
 
 	/**
