@@ -3,6 +3,7 @@ package starcines.model.entities;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.sql.Time;
+import java.util.List;
 
 
 /**
@@ -15,8 +16,6 @@ public class Horario implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="HORARIO_HORID_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="HORARIO_HORID_GENERATOR")
 	@Column(name="hor_id")
 	private Integer horId;
 
@@ -24,9 +23,8 @@ public class Horario implements Serializable {
 	private Time horHora;
 
 	//bi-directional many-to-one association to Cartelera
-	@ManyToOne
-	@JoinColumn(name="hor_car_id")
-	private Cartelera cartelera;
+	@OneToMany(mappedBy="horario")
+	private List<Cartelera> carteleras;
 
 	public Horario() {
 	}
@@ -47,12 +45,26 @@ public class Horario implements Serializable {
 		this.horHora = horHora;
 	}
 
-	public Cartelera getCartelera() {
-		return this.cartelera;
+	public List<Cartelera> getCarteleras() {
+		return this.carteleras;
 	}
 
-	public void setCartelera(Cartelera cartelera) {
-		this.cartelera = cartelera;
+	public void setCarteleras(List<Cartelera> carteleras) {
+		this.carteleras = carteleras;
+	}
+
+	public Cartelera addCartelera(Cartelera cartelera) {
+		getCarteleras().add(cartelera);
+		cartelera.setHorario(this);
+
+		return cartelera;
+	}
+
+	public Cartelera removeCartelera(Cartelera cartelera) {
+		getCarteleras().remove(cartelera);
+		cartelera.setHorario(null);
+
+		return cartelera;
 	}
 
 }

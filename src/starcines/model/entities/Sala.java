@@ -15,8 +15,6 @@ public class Sala implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="SALA_SALID_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="SALA_SALID_GENERATOR")
 	@Column(name="sal_id")
 	private Integer salId;
 

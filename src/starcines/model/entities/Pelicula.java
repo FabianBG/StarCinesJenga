@@ -16,8 +16,6 @@ public class Pelicula implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="PELICULA_PELID_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="PELICULA_PELID_GENERATOR")
 	@Column(name="pel_id")
 	private Integer pelId;
 

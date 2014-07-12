@@ -6,7 +6,6 @@
 		<class>starcines.model.entities.Horario</class>
 		<class>starcines.model.entities.Pelicula</class>
 		<class>starcines.model.entities.Sala</class>
-		<class>starcines.model.entities.Snack</class>
 		<class>starcines.model.entities.Usuario</class>
 		<properties>
 			<property name="javax.persistence.jdbc.url" value="jdbc:postgresql://172.20.158.70:5432/Cines"/>

@@ -15,8 +15,6 @@ public class Genero implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="GENERO_GENID_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="GENERO_GENID_GENERATOR")
 	@Column(name="gen_id")
 	private Integer genId;
 

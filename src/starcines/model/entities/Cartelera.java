@@ -3,7 +3,6 @@ package starcines.model.entities;
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
 
 
 /**
@@ -16,8 +15,6 @@ public class Cartelera implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
-	@SequenceGenerator(name="CARTELERA_CARID_GENERATOR" )
-	@GeneratedValue(strategy=GenerationType.SEQUENCE, generator="CARTELERA_CARID_GENERATOR")
 	@Column(name="car_id")
 	private Integer carId;
 
@@ -29,6 +26,11 @@ public class Cartelera implements Serializable {
 	@Column(name="car_hasta")
 	private Date carHasta;
 
+	//bi-directional many-to-one association to Horario
+	@ManyToOne
+	@JoinColumn(name="car_hor_id")
+	private Horario horario;
+
 	//bi-directional many-to-one association to Pelicula
 	@ManyToOne
 	@JoinColumn(name="car_pel_id")
@@ -38,10 +40,6 @@ public class Cartelera implements Serializable {
 	@ManyToOne
 	@JoinColumn(name="car_sal_id")
 	private Sala sala;
-
-	//bi-directional many-to-one association to Horario
-	@OneToMany(mappedBy="cartelera")
-	private List<Horario> horarios;
 
 	public Cartelera() {
 	}
@@ -70,6 +68,14 @@ public class Cartelera implements Serializable {
 		this.carHasta = carHasta;
 	}
 
+	public Horario getHorario() {
+		return this.horario;
+	}
+
+	public void setHorario(Horario horario) {
+		this.horario = horario;
+	}
+
 	public Pelicula getPelicula() {
 		return this.pelicula;
 	}
@@ -84,28 +90,6 @@ public class Cartelera implements Serializable {
 
 	public void setSala(Sala sala) {
 		this.sala = sala;
-	}
-
-	public List<Horario> getHorarios() {
-		return this.horarios;
-	}
-
-	public void setHorarios(List<Horario> horarios) {
-		this.horarios = horarios;
-	}
-
-	public Horario addHorario(Horario horario) {
-		getHorarios().add(horario);
-		horario.setCartelera(this);
-
-		return horario;
-	}
-
-	public Horario removeHorario(Horario horario) {
-		getHorarios().remove(horario);
-		horario.setCartelera(null);
-
-		return horario;
 	}
 
 }
