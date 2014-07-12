@@ -25,5 +25,6 @@
 			<attribute name="owner.project.facets" value="jpt.jpa;jst.jsf"/>
 		</attributes>
 	</classpathentry>
+	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/GSON"/>
 	<classpathentry kind="output" path="build/classes"/>
 </classpath>
