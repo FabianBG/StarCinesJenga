@@ -5,24 +5,25 @@ import java.util.List;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-/**
- * Session Bean implementation class ManagerDAO
- */
-@Stateless(mappedName = "managerDAO")
-@LocalBean
+
 public class ManagerDAO {
 
-	@PersistenceContext(unitName = "StarCines")
-	private EntityManager em;
+	private static EntityManagerFactory emf;
+	private static EntityManager em;
 
 	/**
 	 * Default constructor.
 	 */
 	public ManagerDAO() {
-		// TODO Auto-generated constructor stub
+		if(emf==null)
+			emf=Persistence.createEntityManagerFactory("appAuditoria");
+		if(em==null)
+			em=emf.createEntityManager();
 	}
 
 	/**
