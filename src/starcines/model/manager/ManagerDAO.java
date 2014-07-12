@@ -10,6 +10,8 @@ import javax.persistence.Persistence;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import starcines.model.entities.Cartelera;
+import starcines.model.entities.Genero;
 import starcines.model.entities.Usuario;
 
 
@@ -29,7 +31,7 @@ public class ManagerDAO {
 			em=emf.createEntityManager();
 	}
 
-	//USUARIOS
+	//Usuarios
 
 		//Listar Todos los Usuarios
 		@SuppressWarnings("unchecked")
@@ -37,7 +39,7 @@ public class ManagerDAO {
 		 List<Usuario> listado;
 		 Query q;
 		 em.getTransaction().begin();
-		 q=em.createQuery("SELECT u FROM Usuario u ORDER BY u.idUsuario");
+		 q=em.createQuery("SELECT u FROM Usuario u ORDER BY u.usu_nick");
 		 listado= q.getResultList();
 		 em.getTransaction().commit();
 		 return listado;
@@ -91,4 +93,65 @@ public class ManagerDAO {
 					return u;
 				}
 			 
+				//Generos
+
+				//Listar Todos los generos
+				@SuppressWarnings("unchecked")
+				public List<Genero> findAllGeneros(){
+				 List<Genero> listado;
+				 Query q;
+				 em.getTransaction().begin();
+				 q=em.createQuery("SELECT u FROM Genero u ORDER BY u.gen_id");
+				 listado= q.getResultList();
+				 em.getTransaction().commit();
+				 return listado;
+				 
+				}
+				
+				//metodo ingresar genero
+					 public void crearGenero (Integer id,String tipo){
+						 em.getTransaction().begin();
+						 Genero g = new Genero();
+						 g.setGenId(id);
+						 g.setGenTipo(tipo);
+						 em.persist(g);
+						 em.getTransaction().commit();
+						 
+					 }
+					 
+				//metodo para buscar un genero por id
+					 public Genero findByIdGenero(Integer id){
+						 em.getTransaction().begin();
+						 Genero g =em.find(Genero.class, id);
+						 em.getTransaction().commit();
+						 return g;
+					 }
+
+				//metodo para actualizar un genero:
+					 public void actualizarGenero(Integer id,String tipo){
+						 //buscamos el objeto que debe ser actualizado:
+						 Genero g = findByIdGenero(id);
+						 em.getTransaction().begin();
+						 // no se actualiza la clave primaria, en este caso solo la descripcion
+						 g.setGenId(id);
+						 g.setGenTipo(tipo);
+						 em.merge(g);
+						 em.getTransaction().commit();
+					 }
+					 
+				
+				//metodo para buscar por nombre
+					 public Genero findByTipo(String tipo){
+							List<Genero> listado;
+							Genero u=null;
+							listado =findAllGeneros();
+							em.getTransaction().begin();
+							for (Genero us:listado){
+								if (us.getGenTipo().equals(tipo)){
+									u=us;
+								}
+							}
+							em.getTransaction().commit();
+							return u;
+						}
 }
