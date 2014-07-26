@@ -2,194 +2,198 @@ package starcines.model.manager;
 
 import java.util.List;
 
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
+
+
+
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.Persistence;
-import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
-import starcines.model.entities.Cartelera;
-import starcines.model.entities.Genero;
-import starcines.model.entities.Usuario;
 
 public class ManagerDAO {
 
-	private static EntityManagerFactory emf;
+	private static EntityManagerFactory factory;
 	private static EntityManager em;
 
 	/**
 	 * Default constructor.
 	 */
 	public ManagerDAO() {
-		if (emf == null)
-			emf = Persistence.createEntityManagerFactory("StarCines");
+		if (factory == null)
+			factory = Persistence.createEntityManagerFactory("StarCinesApp");
 		if (em == null)
-			em = emf.createEntityManager();
+			em = factory.createEntityManager();
 	}
-
-	// Usuarios
 
 	/**
-	 * finder para la busqueda de todos los usuarios dentro de la base de datos.
+	 * finder Generico que devuelve todas las entidades de una tabla.
 	 * 
-	 * @return Listado resultante de usuarios encontrados.
-	 */
-	@SuppressWarnings("unchecked")
-	public List<Usuario> findAllUsuarios() {
-		List<Usuario> listado;
-		Query q;
-		em.getTransaction().begin();
-		q = em.createQuery("SELECT u FROM Usuario u ORDER BY u.usu_nick");
-		listado = q.getResultList();
-		em.getTransaction().commit();
-		return listado;
-
-	}
-
-	// metodo ingresar Usuario
-	public void crearUsuario(String usu, String pass) {
-		em.getTransaction().begin();
-		Usuario u = new Usuario();
-		u.setUsuNick(usu);
-		u.setUsuPass(pass);
-		em.persist(u);
-		em.getTransaction().commit();
-
-	}
-
-	// metodo para buscar un usuario por id
-	public Usuario findByIdUsuario(String idUsuario) {
-		em.getTransaction().begin();
-		Usuario u = em.find(Usuario.class, idUsuario);
-		em.getTransaction().commit();
-		return u;
-	}
-
-	// metodo para actualizar un Usuario:
-	public void actualizarUsuario(String usu, String pass) {
-		// buscamos el objeto que debe ser actualizado:
-		Usuario u = findByIdUsuario(usu);
-		em.getTransaction().begin();
-		// no se actualiza la clave primaria, en este caso solo la descripcion
-		u.setUsuNick(usu);
-		u.setUsuPass(pass);
-		em.merge(u);
-		em.getTransaction().commit();
-	}
-
-	// metodo para buscar por nombre
-	public Usuario findByNombre(String nombre) {
-		List<Usuario> listado;
-		Usuario u = null;
-		listado = findAllUsuarios();
-		em.getTransaction().begin();
-		for (Usuario us : listado) {
-			if (us.getUsuNick().equals(nombre)) {
-				u = us;
-			}
-		}
-		em.getTransaction().commit();
-		return u;
-	}
-
-	// Generos
-
-	// Listar Todos los generos
-	@SuppressWarnings("unchecked")
-	public List<Genero> findAllGeneros() {
-		List<Genero> listado;
-		Query q;
-		em.getTransaction().begin();
-		q = em.createQuery("SELECT u FROM Genero u ORDER BY u.gen_id");
-		listado = q.getResultList();
-		em.getTransaction().commit();
-		return listado;
-
-	}
-
-	// metodo ingresar genero
-	public void crearGenero(Integer id, String tipo) {
-		em.getTransaction().begin();
-		Genero g = new Genero();
-		g.setGenId(id);
-		g.setGenTipo(tipo);
-		em.persist(g);
-		em.getTransaction().commit();
-
-	}
-
-	// metodo para buscar un genero por id
-	public Genero findByIdGenero(Integer id) {
-		em.getTransaction().begin();
-		Genero g = em.find(Genero.class, id);
-		em.getTransaction().commit();
-		return g;
-	}
-
-	// metodo para actualizar un genero:
-	public void actualizarGenero(Integer id, String tipo) {
-		// buscamos el objeto que debe ser actualizado:
-		Genero g = findByIdGenero(id);
-		em.getTransaction().begin();
-		// no se actualiza la clave primaria, en este caso solo la descripcion
-		g.setGenId(id);
-		g.setGenTipo(tipo);
-		em.merge(g);
-		em.getTransaction().commit();
-	}
-
-	// metodo para buscar por nombre
-	public Genero findByTipo(String tipo) {
-		List<Genero> listado;
-		Genero u = null;
-		listado = findAllGeneros();
-		em.getTransaction().begin();
-		for (Genero us : listado) {
-			if (us.getGenTipo().equals(tipo)) {
-				u = us;
-			}
-		}
-		em.getTransaction().commit();
-		return u;
-	}
-
-	// METODOS PARA EL SERVICIO MOBIL
-	/**
-	 * finder de todos los datos de la base de datos para el servicio mobil. HAce uso de la API de 
-	 * Google GSON para transformar los objetos a JSON.
-	 * 
+	 * @param clase
+	 *            La clase que se desea consultar. Por ejemplo:
+	 *            <ul>
+	 *            <li>Usuario.class</li>
+	 *            </ul>
 	 * @param orderBy
 	 *            Expresion que indica la propiedad de la entidad por la que se
 	 *            desea ordenar la consulta. Debe utilizar el alias "o" para
-	 *            nombrar a la(s) propiedad(es) por la que se va a ordenar. 
+	 *            nombrar a la(s) propiedad(es) por la que se va a ordenar. por
+	 *            ejemplo:
+	 *            <ul>
+	 *            <li>o.nombre</li>
+	 *            <li>o.codigo,o.nombre</li>
+	 *            </ul>
 	 *            Puede aceptar null o una cadena vacia, en este caso no
 	 *            ordenara el resultado.
-	 * @return Cadena JSON con los resultadoa obtenidos.
+	 * @return Listado resultante.
 	 */
-	
-	public String getFullData() throws Exception
-	{
-		
-		//Obtener datos de la BD.
+	@SuppressWarnings("rawtypes")
+	public List findAll(Class clase, String orderBy) {
 		Query q;
-		if (!em.getTransaction().isActive())
-			em.getTransaction().begin();
-		q = em.createQuery("SELECT p FROM "+Cartelera.class.getSimpleName()+" p");
-		if (em.getTransaction().isActive())
-			em.getTransaction().commit();
-		List<Cartelera> lst = (List<Cartelera>) q.getResultList();
-		
-		//API de google para generar JSON a partir de objetos java
-		GsonBuilder builder = new GsonBuilder();
-        Gson gson = builder.create();
-        String JSON = gson.toJson(lst);
-        System.out.println(JSON);
-        return JSON;
+		List listado;
+		String sentenciaSQL;
+		if (orderBy == null || orderBy.length() == 0)
+			sentenciaSQL = "SELECT o FROM " + clase.getSimpleName() + " o";
+		else
+			sentenciaSQL = "SELECT o FROM " + clase.getSimpleName()
+					+ " o ORDER BY " + orderBy;
+		q = em.createQuery(sentenciaSQL);
+		listado = q.getResultList();
+		return listado;
+	}
+	
+	/**
+	 * Finder generico para buscar un objeto especifico.
+	 * 
+	 * @param clase
+	 *            La clase sobre la que se desea consultar.
+	 * @param pID
+	 *            Identificador que permitira la busqueda.
+	 * @return El objeto solicitado (si existiera).
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public Object findById(Class clase, Object pID) throws Exception {
+		if (pID == null)
+			throw new Exception(
+					"Debe especificar el codigo para buscar el dato.");
+		Object o;
+		try {
+			if(!em.getTransaction().isActive())
+				em.getTransaction().begin();
+			o = em.find(clase, pID);
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw new Exception("No se encontro la informacion especificada: "
+					+ e.getMessage());
+		}
+		return o;
 	}
 
+	/**
+	 * Finder generico para buscar un objeto especifico por una columna especificada.
+	 * 
+	 * @param clase
+	 *            La clase sobre la que se desea consultar.
+	 * @param param
+	 *            columna de busqueda.
+	 * @param value
+	 *            valor de parametro de busqueda.
+	 *@param orderBy
+	 *            Expresion que indica la propiedad de la entidad por la que se
+	 *            desea ordenar la consulta. Debe utilizar el alias "o" para
+	 *            nombrar a la(s) propiedad(es) por la que se va a ordenar.
+	 *            Puede aceptar null o una cadena vacia, en este caso no
+	 *            ordenara el resultado.
+	 * @return Lista de objetos solicitados (si existieran).
+	 * @throws Exception
+	 */
+	@SuppressWarnings({ "rawtypes" })
+	public List findByParam(Class clase, String param, Object value, String orderBy) throws Exception {
+		Query q;
+		List listado;
+		String sentenciaSQL;
+		if(!em.getTransaction().isActive())
+			em.getTransaction().begin();
+		if (orderBy == null || orderBy.length() == 0)
+			sentenciaSQL = "SELECT o FROM " + clase.getSimpleName() + " o WHERE " + param + "=:value1";
+		else
+			sentenciaSQL = "SELECT o FROM " + clase.getSimpleName()
+					+ " o WHERE " + param + "=:value1" + " ORDER BY " + orderBy;
+		q = em.createQuery(sentenciaSQL).setParameter("value1", value);
+		listado = q.getResultList();
+		return listado;
+	}
+	/**
+	 * Almacena un objeto en la persistencia.
+	 * 
+	 * @param pObjeto
+	 *            El objeto a insertar.
+	 * @throws Exception
+	 */
+	public void insertar(Object pObjeto) throws Exception {
+		if (!em.getTransaction().isActive()){
+			em.getTransaction().begin();
+		}
+		try {
+			em.persist(pObjeto);
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw new Exception("No se pudo insertar el objeto especificado: "
+					+ e.getMessage());
+		}
+		em.getTransaction().commit();
+	}
+
+	/**
+	 * Elimina un objeto de la persistencia.
+	 * 
+	 * @param clase
+	 *            La clase correspondiente al objeto que se desea eliminar.
+	 * @param pID
+	 *            El identificador del objeto que se desea eliminar.
+	 * @throws Exception
+	 */
+	@SuppressWarnings("rawtypes")
+	public void eliminar(Class clase, Object pID) throws Exception {
+		if (pID == null) {
+			throw new Exception(
+					"Debe especificar un identificador para eliminar el dato solicitado.");
+		}
+		Object o = findById(clase, pID);
+		try {
+			if(!em.getTransaction().isActive())
+				em.getTransaction().begin();
+			em.remove(o);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			throw new Exception("No se pudo eliminar el dato: "
+					+ e.getMessage());
+		}
+	}
+
+	/**
+	 * Actualiza la informacion de un objeto en la persistencia.
+	 * 
+	 * @param pObjeto
+	 *            Objeto que contiene la informacion que se debe actualizar.
+	 * @throws Exception
+	 */
+	public void actualizar(Object pObjeto) throws Exception {
+		if (pObjeto == null)
+			throw new Exception("No se puede actualizar un dato null");
+		try {
+			if(!em.getTransaction().isActive())
+				em.getTransaction().begin();
+			em.merge(pObjeto);
+			em.getTransaction().commit();
+		} catch (Exception e) {
+			em.getTransaction().rollback();
+			e.printStackTrace();
+			throw new Exception("No se pudo actualizar el dato: "
+					+ e.getMessage());
+			
+		}
+	}
 }
